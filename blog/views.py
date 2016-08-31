@@ -1,9 +1,10 @@
 from flask_blog import app, db
-from flask import render_template, redirect, flash, url_for
+from flask import render_template, redirect, flash, url_for, session, abort
 from blog.form import SetupForm
 from blog.models import Blog
 from author.models import Author
 from author.decorators import login_required
+import bcrypt
 
 
 @app.route('/')
@@ -21,7 +22,10 @@ def index():
 @app.route('/admin')
 @login_required
 def admin():
-    return render_template('blog/admin.html')
+    if session.get('is_author'):
+        return render_template('blog/admin.html')
+    else:
+        abort(403)
 
 
 @app.route('/setup', methods=['POST', 'GET'])
@@ -31,11 +35,13 @@ def setup():
     error = None
     
     if form.validate_on_submit():
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(form.password.data, salt)
         author = Author(
             form.fullname.data,
             form.email.data,
             form.username.data,
-            form.password.data,
+            hashed_password,
             True
             )
         db.session.add(author)
@@ -64,3 +70,8 @@ def setup():
             error = 'Error creating blog.'
             
     return render_template('blog/setup.html', form=form, error=error)
+
+@app.route('/post')
+@login_required
+def post():
+    return 'Blog post'
