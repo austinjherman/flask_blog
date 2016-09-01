@@ -1,6 +1,7 @@
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.migrate import Migrate
+from flask.ext.markdown import Markdown
 
 app = Flask(__name__.split('.')[0])
 app.config.from_object('settings')
@@ -8,6 +9,8 @@ app.config.from_object('settings')
 db = SQLAlchemy(app)
 
 migrate = Migrate(app, db)
+
+Markdown(app)
 
 from blog import views
 from author import views

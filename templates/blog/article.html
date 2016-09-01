@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog Post{% endblock %}
+
+{% block content %}
+
+{% filter markdown %}
+
+# My Markdown
+
+1. First point
+2. Next one
+3. Another one
+
+{%endfilter%}
+
+{% endblock %}
