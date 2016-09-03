@@ -31,7 +31,7 @@ def login():
                     return redirect(next)
                 
                 else:
-                    return redirect(url_for('login_success'))
+                    return redirect(url_for('index'))
             else:
                 error = 'Incorrect username and password.'
         else:
@@ -55,11 +55,6 @@ def register():
 @app.route('/success')
 def success():
     return 'Author registered!'
-
-@app.route('/login-success')
-@login_required
-def login_success():
-    return 'Author logged in!'
 
 
 

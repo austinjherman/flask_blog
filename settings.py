@@ -13,3 +13,7 @@ DB_URI = 'mysql+pymysql://%s:%s@%s/%s' % (DB_USERNAME, DB_PASSWORD, DB_HOST, BLO
 # SQL ALCHEMY SETTINGS
 SQLALCHEMY_DATABASE_URI = DB_URI
 SQLALCHEMY_TRACK_MODIFICATIONS = True
+
+# Flask uploads
+UPLOADED_IMAGES_DEST = '/home/austin/compsci/flask_intro/flask_blog/static/images'
+UPLOADED_IMAGES_URL  = '/static/images'
