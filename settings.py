@@ -16,4 +16,4 @@ SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # Flask uploads
 UPLOADED_IMAGES_DEST = '/home/austin/compsci/flask_intro/flask_blog/static/images'
-UPLOADED_IMAGES_URL  = '/static/images'
+UPLOADED_IMAGES_URL  = '/static/images/'
