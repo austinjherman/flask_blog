@@ -1,7 +1,7 @@
 from flask_blog import app, db, uploaded_images
 from flask import render_template, redirect, flash, url_for, session, abort, request
-from blog.form import SetupForm, PostForm
-from blog.models import Blog, Post, Category
+from blog.form import SetupForm, PostForm, CommentForm
+from blog.models import Blog, Post, Category, Comment
 from author.models import Author
 from author.decorators import login_required, author_required
 import bcrypt
@@ -109,10 +109,27 @@ def post():
         return redirect(url_for('article', slug=slug))
     return render_template('blog/post.html', form=form, action='new')
 
-@app.route('/article/<slug>')
+@app.route('/article/<slug>', methods=['GET', 'POST'])
 def article(slug):
     post = Post.query.filter_by(slug=slug).first_or_404()
-    return render_template('blog/article.html', post=post)
+    comments = Comment.query.filter_by(post_id=post.id)
+    form = CommentForm()
+    error = None
+    if form.validate_on_submit():
+        if session.get('username'):
+            blog    = Blog.query.first()
+            author  = Author.query.filter_by(username=session['username']).first()
+            post    = Post.query.filter_by(slug=slug).first_or_404()
+            body    = form.body.data
+            comment = Comment(author, blog, post, body)
+            db.session.add(comment)
+            db.session.commit()
+            return redirect(url_for('article', slug=slug))
+        else:
+            error = 'You must be logged in to comment!'
+    return render_template('blog/article.html', post=post, comments=comments, form=form,
+                           error=error)
+
 
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])
 @author_required
@@ -150,3 +167,4 @@ def delete(post_id):
     db.session.commit()
     flash('Article deleted')
     return redirect(url_for('admin'))
+

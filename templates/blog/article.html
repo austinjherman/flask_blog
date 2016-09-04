@@ -28,10 +28,53 @@
       on {{ post.publish_date.strftime('%Y-%m-%d') }}
       in <a href="javascript:void(0)">{{ post.category.name }}</a>
     </div>
-      
+
+    <hr />
     
   </div>
 
+</div>
+
+{% for comment in comments %}
+<div class="row">
+  <div class="col-md-offset-3 col-md-6">
+
+    <div class="text-muted">
+      <a href="javascript:void(0)">{{ comment.author.fullname }}</a>
+      said on {{ comment.publish_date }}
+    </div>
+    
+    {{ comment.body|markdown }}
+    
+  </div>
+</div>
+{% endfor %}
+
+{% from '_formhelpers.html' import render_field %}
+<div class="row">
+  <div class="col-md-offset-3 col-md-6">
+
+    {% if error %}
+    <div class="text-danger">{{ error }}</div>
+    {% endif %}
+    
+    {% include '_flashmessages.html' %}
+    <form method="POST" action="{{ url_for('article', slug=post.slug) }}" role="form">
+
+      {{ form.hidden_tag() }}
+
+      {{ render_field(form.body, class='form-control', rows=10) }}
+
+      {% if session.get('username') %}
+      <button type="submit" class="btn btn-default">Comment</button>
+
+      {% else %}
+      <button type="button" class="btn btn-default">Log In to Comment</button>
+  
+      {% endif %}
+  
+    </form>
+  </div>
 </div>
 
 {% endblock %}

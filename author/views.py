@@ -1,5 +1,5 @@
-from flask_blog import app
-from flask import render_template, redirect, url_for, session, request
+from flask_blog import app, db
+from flask import render_template, redirect, url_for, session, request, flash
 from author.form import RegisterForm, LoginForm
 from author.models import Author
 from author.decorators import login_required
@@ -18,13 +18,14 @@ def login():
         author = Author.query.filter_by(
             username = form.username.data,
         ).first()
-
+        
         if author:
             
             if bcrypt.hashpw(form.password.data, author.password) == author.password:
                 session['username'] = form.username.data
                 session['is_author'] = author.is_author
-            
+                flash('User %s logged in' % form.username.data)
+                
                 if 'next' in session:
                     next = session.get('next')
                     session.pop('next')
@@ -43,13 +44,36 @@ def login():
 def logout():
     session.pop('username')
     session.pop('is_author')
+    flash('User logged out')
     return redirect(url_for('index'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
+    error = None
     if form.validate_on_submit():
-        return redirect(url_for('success'))
+        salt = bcrypt.gensalt()
+        hashed_password = bcrypt.hashpw(form.password.data, salt)
+        author = Author(
+            form.fullname.data,
+            form.email.data,
+            form.username.data,
+            hashed_password,
+            False
+            )
+        db.session.add(author)
+        db.session.flush()
+
+        if author.id:
+            db.session.commit()
+            flash('User registered')
+
+        else:
+            db.session.rollback()
+            error = 'Error registering user'
+            return render_template('author/register.html', form=form, error=error)
+            
+        return redirect(url_for('index'))
     return render_template('author/register.html', form=form)
 
 @app.route('/success')

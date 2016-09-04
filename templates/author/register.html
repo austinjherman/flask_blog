@@ -10,6 +10,10 @@
 
     <h3>Author Registration</h3>
 
+    {% if error %}
+    <div class="error text-danger">{{ error }}</div>
+    {% endif %}
+
     {% from '_formhelpers.html' import render_field %}
 
     <form method="POST" action="{{ url_for('register') }}" role="form">

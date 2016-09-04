@@ -14,9 +14,11 @@ class SetupForm(RegisterForm):
         ])
 
 
+    
 def categories():
     return Category.query
-    
+
+
 class PostForm(Form):
     image = FileField('Image', validators=[
         FileAllowed(['jpg', 'png'], 'Images only!')
@@ -28,3 +30,7 @@ class PostForm(Form):
     body = TextAreaField('Content', validators=[validators.Required()])
     category = QuerySelectField('Category', query_factory=categories, allow_blank=True)
     new_category = StringField('New Category')
+
+
+class CommentForm(Form):
+    body = TextAreaField('Comment', validators=[validators.Required()])

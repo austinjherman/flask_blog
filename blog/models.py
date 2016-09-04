@@ -36,7 +36,7 @@ class Post(db.Model):
     def imgsrc(self):
         return uploaded_images.url(self.image)
     
-    def __init__(self, blog, author, title, body, category, image = None,
+    def __init__(self, blog, author, title, body, category, image=None,
                  slug=None, publish_date=None, live=True):
         self.blog_id      = blog.id
         self.author_id    = author.id
@@ -65,3 +65,29 @@ class Category(db.Model):
 
     def __repr__(self):
         return self.name
+
+
+class Comment(db.Model):
+    id           = db.Column(db.Integer, primary_key=True)
+    author_id    = db.Column(db.Integer, db.ForeignKey('author.id'))
+    blog_id      = db.Column(db.Integer, db.ForeignKey('blog.id'))
+    post_id      = db.Column(db.Integer, db.ForeignKey('post.id'))  
+    body         = db.Column(db.Text)
+    publish_date = db.Column(db.DateTime)
+    live         = db.Column(db.Boolean)
+
+    def __init__(self, author, blog, post, body, publish_date=None, live=True):
+        self.author_id = author.id
+        self.blog_id   = blog.id
+        self.post_id   = post.id
+        self.body      = body
+
+        if publish_date is None:
+            self.publish_date = datetime.utcnow()
+        else:
+            self.publish_date = publish_date
+
+        self.live      = live
+
+    def __repr__(self):
+        return '<User comment>'
