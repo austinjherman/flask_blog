@@ -1,14 +1,9 @@
 import os
 
-SECRET_KEY = '\x0c\xd8\xd8\xa9S\x9d\x93\xac5\xca\x15RX\xb1\t\x07\x0c\xd1E\x0b\xbf\x1c\x98\x18'
+SECRET_KEY = 'so-secret'
 DEBUG = True
 
-# Database configuration
-DB_USERNAME = 'austin'
-DB_PASSWORD = 'AH!4SMG'
-BLOG_DATABASE_NAME = 'flask_blog'
-DB_HOST = 'localhost'
-DB_URI = 'mysql+pymysql://%s:%s@%s/%s' % (DB_USERNAME, DB_PASSWORD, DB_HOST, BLOG_DATABASE_NAME)
+# Database configuration goes here
 
 # SQL ALCHEMY SETTINGS
 SQLALCHEMY_DATABASE_URI = DB_URI
