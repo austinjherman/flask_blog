@@ -114,21 +114,34 @@ def article(slug):
     post = Post.query.filter_by(slug=slug).first_or_404()
     comments = Comment.query.filter_by(post_id=post.id)
     form = CommentForm()
-    error = None
-    if form.validate_on_submit():
+    if request.method == 'POST':
         if session.get('username'):
-            blog    = Blog.query.first()
-            author  = Author.query.filter_by(username=session['username']).first()
-            post    = Post.query.filter_by(slug=slug).first_or_404()
-            body    = form.body.data
-            comment = Comment(author, blog, post, body)
-            db.session.add(comment)
-            db.session.commit()
-            return redirect(url_for('article', slug=slug))
+            if form.validate_on_submit():
+                blog    = Blog.query.first()
+                author  = Author.query.filter_by(username=session['username']).first()
+                post    = Post.query.filter_by(slug=slug).first_or_404()
+                body    = form.body.data
+                comment = Comment(author, blog, post, body)
+                db.session.add(comment)
+                db.session.commit()
+                return redirect(url_for('article', slug=slug))
+            else:
+                flash('Please fill out required fields')
         else:
-            error = 'You must be logged in to comment!'
-    return render_template('blog/article.html', post=post, comments=comments, form=form,
-                           error=error)
+            flash('You must be logged in to comment.')
+    return render_template('blog/article.html', post=post, comments=comments, form=form)
+
+@app.route('/delete-comment/<int:comment_id>')
+def delete_comment(comment_id):
+    comment = Comment.query.filter_by(id=comment_id).first()
+    post    = Post.query.filter_by(id=comment.post_id).first()
+    if comment.author_id == session.get('user_id'):
+        comment.live = False
+        db.session.commit()
+        flash('Comment deleted')
+    else:
+        flash('Error deleting comment')
+    return redirect(url_for('article', slug=post.slug))
 
 
 @app.route('/edit/<int:post_id>', methods=['GET', 'POST'])

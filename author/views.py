@@ -23,6 +23,7 @@ def login():
             
             if bcrypt.hashpw(form.password.data, author.password) == author.password:
                 session['username'] = form.username.data
+                session['user_id']  = author.id
                 session['is_author'] = author.is_author
                 flash('User %s logged in' % form.username.data)
                 
@@ -43,6 +44,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('username')
+    session.pop('user_id')
     session.pop('is_author')
     flash('User logged out')
     return redirect(url_for('index'))
