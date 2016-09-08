@@ -154,7 +154,7 @@ class UserTest(unittest.TestCase):
         assert 'This is a comment' in str(rv.data)
         comment = Comment.query.first()
         rv = self.delete_comment(comment)
-        assert 'Comment deleted'
+        assert 'Comment deleted' in str(rv.data)
         
         
 
